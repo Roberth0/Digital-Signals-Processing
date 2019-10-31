@@ -170,10 +170,11 @@ plt.show()
 print('###############################################')
 print('                 Enunciado B3            ')
 plt.subplot(5,1,1)
-frecuencia8=4
-amplitud8=5
-x9=amplitud8*np.cos(2*np.pi*frecuencia8*muestras)
-plt.plot(x9,label='5cos(8pit)',color='blue')
+frecuencia6=4
+amplitud6=2
+n=np.linspace(0,1.0*np.pi*frecuencia6,100)
+x8=amplitud6*np.sin(n)
+plt.stem(n,x8,'b',use_line_collection=True,label='x[n]=2sin(8*pi*n)')
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Frecuencia Menor a 5")
@@ -182,10 +183,10 @@ plt.grid()
 plt.show()
 
 plt.subplot(5,1,2)
-frecuencia8=2
-amplitud8=5
-x9=amplitud8*np.cos(2*np.pi*frecuencia8*muestras)
-plt.plot(x9,label='5cos(4pit)',color='blue')
+frecuencia8=3
+n2=np.linspace(0,1.0*np.pi*frecuencia8,100)
+x9=amplitud6*np.sin(n2)
+plt.stem(n2,x8,'b',use_line_collection=True,label='x[n]=2sin(8*pi*n)')
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Frecuencia Menor a 5")
@@ -193,11 +194,11 @@ plt.legend(loc='best')
 plt.grid()
 plt.show()
 
-plt.subplot(5,1,1)
-frecuencia8=5
-amplitud8=5
-x9=amplitud8*np.cos(2*np.pi*frecuencia8*muestras)
-plt.plot(x9,label='5cos(10pit)',color='blue')
+plt.subplot(5,1,3)
+frecuencia9=5
+n3=np.linspace(0,1.0*np.pi*frecuencia9,100)
+x10=amplitud6*np.sin(n3)
+plt.stem(n3,x10,'b',use_line_collection=True,label='x[n]=2sin(8*pi*n)')
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Frecuencia Igual a 5")
@@ -205,11 +206,11 @@ plt.legend(loc='best')
 plt.grid()
 plt.show()
 
-plt.subplot(5,1,1)
-frecuencia8=7
-amplitud8=5
-x9=amplitud8*np.cos(2*np.pi*frecuencia8*muestras)
-plt.plot(x9,label='5cos(14pit)',color='blue')
+plt.subplot(5,1,4)
+frecuencia10=7
+n4=np.linspace(0,1.0*np.pi*frecuencia10,100)
+x11=amplitud6*np.sin(n4)
+plt.stem(n4,x11,'b',use_line_collection=True,label='x[n]=2sin(8*pi*n)')
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Frecuencia Mayor a 5")
@@ -217,11 +218,11 @@ plt.legend(loc='best')
 plt.grid()
 plt.show()
 
-plt.subplot(5,1,1)
-frecuencia8=9
-amplitud8=5
-x9=amplitud8*np.cos(2*np.pi*frecuencia8*muestras)
-plt.plot(x9,label='5cos(18pit)',color='blue')
+plt.subplot(5,1,5)
+frecuencia11=9
+n5=np.linspace(0,1.0*np.pi*frecuencia11,100)
+x12=amplitud6*np.sin(n5)
+plt.stem(n5,x12,'b',use_line_collection=True,label='x[n]=2sin(8*pi*n)')
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Frecuencia Mayor a 5")
