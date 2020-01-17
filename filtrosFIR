@@ -1,294 +1,91 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan  7 07:24:17 2020
+Created on Tue Jan 14 09:01:23 2020
 
-@author: Itami
+@author: Usuario
 """
-from scipy import signal 
+import signals as dt
+import matplotlib.pyplot as plt
+from scipy.fftpack  import fft
 import numpy as np
-from matplotlib import pyplot as plt
-from scipy.fftpack  import fft, fftshift # fftshift convertir a frecuencia y magnitud
-
-#librería signal
-#blackman 
-window_blackman=signal.get_window('blackman',51)
-window_triang=signal.get_window('triang',51)
-window_hamming=signal.get_window('hamming',51)
-window_gaussian=signal.gaussian(51, std=7)
-
-
-# Ventanas de numero impar para mejor diseno
-
-
-plt.plot(window_blackman, label='blackman_window', color='blue')
-plt.plot(window_triang, label='triang_window', color='green')
-plt.plot(window_hamming, label='hamming_window', color='red')
-plt.plot(window_gaussian, label='gaussian_window', color='yellow')
-plt.legend(loc='best')
-plt.grid()
-plt.show()
-
-
-
-#convertir la ventana a frecuencia(frecuency response)
-
-
-A = fft(window_hamming)
-mag = np.abs(fftshift(A))
-freq = np.linspace(-0.5, 0.5, len(A))
-with np.errstate(divide='ignore', invalid='ignore'):
-    response = 20 * np.log10(mag)
-response = np.clip(response, -100, 100)
-plt.plot(freq, response)
-
-
-##############Generar Senal############
-
-
-from numpy import cos,sin,pi,arange,absolute
-sampling_rate=100 #Frecuencia de muestreo
-nsamples=400 #Cuantas muestras se adquiere
-t=arange(nsamples)/sampling_rate #Generar las componenetes de tiempo
-
-
-#utilizar funciones escaladas para mejorar el funcionamiento del filtro de 0 a 1
-x1=cos(2*pi*1*t)
-x2=sin(2*pi*16*t)
-x3=sin(2*pi*24*t)
-x=x1+x2+x3
-plt.plot(x)
-plt.show()
-
-#filtros por ventanas
-#en filtros pl los coeficientes son de menor valor
-lowpass_coef=signal.firwin(25,2,nyq=100, window='nuttall')   # firwin generar componentes(step response) (numero de componentes,frecuencia de corte,frecuencia de muestreo,ventana)
-#lowpass_coef
-#plt.plot(lowpass_coef)
-#convolucion senal de entredad con el kernel
-output=signal.convolve(x,lowpass_coef, mode='same')
-
-f,plt_arr = plt.subplots(2,sharex=True)
-f.suptitle("Filtro de Ventanas")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,output,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Bajo')
-
-
-#########HighPass
-
-
-highpas_coef=signal.firwin(21, 10,nyq=100, pass_zero=False,window='nuttall')#ganacia
-#plt.plot(highpas_coef)
-output2=signal.convolve(x,highpas_coef, mode='same')
-
-
-f,plt_arr = plt.subplots(3,sharex=True)
-f.suptitle("Filtro de Ventanas")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,output,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Bajo')
-plt_arr[2].plot(t,output2,color='green')
-plt_arr[2].set_title('Senal Salida Pasa Alto')
-
-
-
-
-
-
-
-
-f1, f2 = 15, 17
-bandpass_coef=signal.firwin(17, [f1, f2], pass_zero=False ,nyq=100,window='nuttall')#pasa banda
-output3=signal.convolve(x,bandpass_coef, mode='same')
-#plt.plot(t,output3)
-f,plt_arr = plt.subplots(4,sharex=True)
-f.suptitle("Filtro de Ventanas")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,output,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Bajo')
-plt_arr[2].plot(t,output2,color='green')
-plt_arr[2].set_title('Senal Salida Pasa Alto')
-plt_arr[3].plot(t,output3,color='yellow')
-plt_arr[3].set_title('Senal Salida Pasa Banda')
-
-
-
-x1=cos(2*pi*2*t)
-x2=sin(2*pi*20*t)
-x3=cos(2*pi*35*t)
-x=x1+x2+x3
-plt.plot(x3)
-
-
-low=signal.firwin(41,25,pass_zero=True,nyq=100,window='triang')
-low
-
-
-out=signal.convolve(x,low,mode='same')
-
-f,plt_arr = plt.subplots(2,sharex=True)
-f.suptitle("Filtro de Ventanas")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,out,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Bajo')
-
-
-high=signal.firwin(21,5,pass_zero=False,nyq=100,window='blackman')
-out2=signal.convolve(x,high,mode='same')
-
-f,plt_arr = plt.subplots(2,sharex=True)
-f.suptitle("Filtro de Ventanas")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,out2,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Alto a 45 Hz')
-
-
-out=signal.convolve(x,high,mode='same')
-
-outc=signal.convolve(out,low,mode='same')
-plt.plot(outc)
-plt.show()
-
-
-
-
-
-
-
-
-
-
-################Filtros IIR#######################################################
-
-#butterworth
 from scipy import signal
-import matplotlib.pyplot as plt
-#butter(orden del filtro,frecuencia de corte,tipo de filtro, filtro analogo digital)
-b, a = signal.butter(12, 100, 'low', analog=True)
-w, h = signal.freqs(b, a)
-plt.plot(w, 20 * np.log10(abs(h)))
-plt.xscale('log')
-plt.title('Butterworth filter frequency response')
-plt.xlabel('Frequency [radians / second]')
-plt.ylabel('Amplitude [dB]')
-plt.margins(0, 0.1)
-plt.grid(which='both', axis='both')
-plt.axvline(100, color='green') # cutoff frequency
-plt.show()
-
-#cheby1
-
-from scipy import signal
-import matplotlib.pyplot as plt
-#cheby1(orden, rizo ,frecuencia de corte, tipo)
-b, a = signal.cheby1(4, 5, 100, 'low', analog=True)
-w, h = signal.freqs(b, a)
-plt.semilogx(w, 20 * np.log10(abs(h)))
-plt.title('Chebyshev Type I frequency response (rp=5)')
-plt.xlabel('Frequency [radians / second]')
-plt.ylabel('Amplitude [dB]')
-plt.margins(0, 0.1)
-plt.grid(which='both', axis='both')
-plt.axvline(100, color='green') # cutoff frequency
-plt.axhline(-5, color='green') # rp
-plt.show()
+#from matplotlib import style
 
 
-#cheby 2
-b, a = signal.cheby2(4, 40, 100, 'low', analog=True)
-w, h = signal.freqs(b, a)
-plt.semilogx(w, 20 * np.log10(abs(h)))
-plt.title('Chebyshev Type II frequency response (rs=40)')
-plt.xlabel('Frequency [radians / second]')
-plt.ylabel('Amplitude [dB]')
-plt.margins(0, 0.1)
-plt.grid(which='both', axis='both')
-plt.axvline(100, color='green') # cutoff frequency
-plt.axhline(-40, color='green') # rs
-plt.show()
+#Graficas de las funciones
+x1=dt.airflow_100Hz
+x2=dt.airflow_calibrated_100Hz
+x3=dt.ecg_100Hz
+
+def plot(signal,title):
+        plt.plot(signal);plt.title(title)
+        plt.xlabel("Time"); plt.ylabel("Magnitude")
+        plt.grid("on")
+        plt.show()
+        
+plot(x1,"Airflow")
+plot(x2,"Airflow Calibrated")
+plot(x3,"Ecg")
+#Transformada de Fourier
 
 
-#bessel
-b, a = signal.bessel(12, 100, 'low', analog=True)
-w, h = signal.freqs(b, a)
-plt.plot(w, 20 * np.log10(np.abs(h)))
-plt.xscale('log')
-plt.title('Bessel filter frequency response (with Butterworth)')
-plt.xlabel('Frequency [radians / second]')
-plt.ylabel('Amplitude [dB]')
-plt.margins(0, 0.1)
-plt.grid(which='both', axis='both')
-plt.axvline(100, color='green') # cutoff frequency
-plt.show()
+tf1=fft(x1)
+tf2=fft(x2)
+tf3=fft(x3)
+def plotf(signal,title):
+    plt.stem(signal);plt.title(title)
+    plt.xlabel("Frecuency"); plt.ylabel("Time")
+    plt.grid("on")
+    plt.xlim(0,len(signal)/2)
+    plt.show()
+    
 
-#filtros iir
-from numpy import cos,sin,pi,arange,absolute
-sampling_rate=100
-nsamples=400
-t=arange(nsamples)/sampling_rate
-x1=cos(2*pi*2*t)
-x2=sin(2*pi*16*t)
-x3=sin(2*pi*25*t)
-x=x1+x2+x3
-plt.plot(x)
-plt.show()
+plotf(tf1,"Transformada Airflow")
+plotf(tf2,"Transformada Airflow Calibrated")
+plotf(tf3,"Transformada Ecg")
 
-############Filtro pasa bajo Chevy
+#Normalizacion
+norm_signal=np.zeros(len(x2))
+for i,num in enumerate(x2):
+    norm_signal[i]=float(x2[i]/max(x2))
 
-sos = signal.cheby1(3, 1, 5, 'lp', fs=100,analog=False, output='sos')
-filtered = signal.sosfilt(sos, x)
-plt.plot(t,filtered)
+plot(norm_signal,"Señal Normalizada")
 
 
-f,plt_arr = plt.subplots(2,sharex=True)
-f.suptitle("Filtro IIR")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,filtered,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Bajo')
-
-#####################Filtro pasa bajo butter#####
-
-butter = signal.butter(4, 5, 'lp', fs=100,analog=False, output='sos')
-filtered = signal.sosfilt(butter, x)
-plt.plot(t,filtered)
+#Filtros FIIR
+highpas_coef=signal.firwin(21,2,nyq=100,pass_zero=False,window='bartlett')
+signal_output=signal.convolve(norm_signal,highpas_coef,mode='same')
+lowpass_coef=signal.firwin(21,30,nyq=100, window='bartlett')
+output=signal.convolve(signal_output,lowpass_coef, mode='same')
+plot(output,"Señal Filtrada Ventana Bartlett")
 
 
-f,plt_arr = plt.subplots(2,sharex=True)
-f.suptitle("Filtro IIR Butter")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,filtered,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Bajo')
+highpas_coef=signal.firwin(21,2,nyq=100,pass_zero=False,window='blackman')
+signal_output=signal.convolve(norm_signal,highpas_coef,mode='same')
+lowpass_coef=signal.firwin(21,40,nyq=100, window='blackman')
+output=signal.convolve(signal_output,lowpass_coef, mode='same')
+plot(output,"Señal Filtrada Ventana Blackman")
+
+#Filtros IIR
+
+sos = signal.cheby1(2, 1,2, 'hp', fs=100,analog=False, output='sos')
+filtered1 = signal.sosfilt(sos, norm_signal)
+sos2 = signal.cheby1(2, 1,5, 'lp', fs=100,analog=False, output='sos')
+filtered2 = signal.sosfilt(sos2, filtered1)
+plot(filtered2,"Filtro IIR Chebyshef")
 
 
+butter = signal.butter(3, 2, 'hp', fs=100,analog=False, output='sos')
+filtered3 = signal.sosfilt(butter, norm_signal)
+butter2 = signal.butter(3, 5, 'lp', fs=100,analog=False, output='sos')
+filtered4 = signal.sosfilt(butter2, filtered3)
+plot(filtered4,"Filtro IIR Butterworth")
 
-bessel=signal.bessel(8,20,'hp',fs=100,analog=False,output='sos')
-filtered=signal.sosfilt(bessel,x)
 
-
-f,plt_arr = plt.subplots(2,sharex=True)
-f.suptitle("Filtro IIR Bessel")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,filtered,color='red')
-plt_arr[1].set_title('Senal Salida Pasa Alto')
-
-############Filtro pasa banda#################
-
-band=signal.butter(10,[14,20],'bp',fs=100,analog=False,output='sos')
-filtered=signal.sosfilt(band,x)
-f,plt_arr = plt.subplots(2,sharex=True)
-f.suptitle("Filtro IIR Butter Pasa Banda 14-20")
-plt_arr[0].plot(t,x,color='blue')
-plt_arr[0].set_title('Senal Entrada')
-plt_arr[1].plot(t,filtered,color='red')
-plt_arr[1].set_title('Senal Salida ')
+plt.subplot(2,1,1)
+plt.plot(norm_signal)
+plt.subplot(2,1,2)
+plt.plot(filtered4)
 
 
 
@@ -298,10 +95,3 @@ plt_arr[1].set_title('Senal Salida ')
 
 
 
-
-
-sos = signal.butter(4, 1, 'lp', fs=100,analog=False, output='sos')
-filtered = signal.sosfilt(sos, x)
-plt.plot(t,filtered)
-
-filtered1=signal.convolve(sos,x)
