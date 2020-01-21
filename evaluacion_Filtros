@@ -1,0 +1,113 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jan 21 07:26:02 2020
+
+@author: Itami
+"""
+
+import testset as dt
+import matplotlib.pyplot as plt
+from scipy.fftpack  import fft
+import numpy as np
+from scipy import signal
+
+x1=dt.prueba_Dataset
+
+def plot(signal1,title):
+        plt.plot(signal1,'m');plt.title(title)
+        plt.xlabel("Time"); plt.ylabel("Magnitude")
+        plt.grid("on")
+        plt.show()
+                
+plot(x1,"Señal Original")
+
+def plotf(signal1,title):
+    plt.stem(signal1);plt.title(title)
+    plt.xlabel("Frecuency"); plt.ylabel("Time")
+    plt.grid("on")
+    plt.xlim(0,len(signal1)/2)
+    plt.show()
+
+tf1=fft(x1)
+
+plotf(tf1,"Transformada de Fourier")
+
+#Normalizacion
+
+norm_signal=np.zeros(len(x1))
+for i,num in enumerate(x1):
+    norm_signal[i]=float(x1[i]/max(x1))
+
+plot(norm_signal,"Señal Normalizada")
+
+savis_smooth=signal.savgol_filter(norm_signal,9,3) ### senal de entrada/ tamano de wi/ exponente
+signal.savgol_coeffs(11,3)
+plt.plot(savis_smooth,color='m')
+plt.xlabel("Tiempo")
+plt.ylabel("Magnitud")
+plt.title("Filtro Savitzky Golay")
+plt.grid()
+plt.show()
+
+
+ruido=np.array(norm_signal)-np.array(savis_smooth)
+plt.plot(ruido,'c')
+plt.xlabel('Tiempo')
+plt.ylabel('Magnitud')
+plt.title('Ruido Señal')
+plt.show()
+
+#Filtros FIIR
+highpas_coef=signal.firwin(81,2,nyq=100,pass_zero=False,window='triang')
+signal_output=signal.convolve(norm_signal,highpas_coef,mode='same')
+lowpass_coef=signal.firwin(81,13,nyq=100, pass_zero=True,window='triang')
+output=signal.convolve(signal_output,lowpass_coef, mode='same')
+plot(output,"Señal Filtrada Ventana Triang")
+
+
+highpas_coef=signal.firwin(21,2,nyq=100,pass_zero=False,window='blackman')
+signal_output=signal.convolve(norm_signal,highpas_coef,mode='same')
+lowpass_coef=signal.firwin(21,40,nyq=100, window='blackman')
+output=signal.convolve(signal_output,lowpass_coef, mode='same')
+plot(output,"Señal Filtrada Ventana Blackman")
+
+#Filtros IIR
+
+sos = signal.cheby1(2, 1,2, 'hp', fs=100,analog=False, output='sos')
+filtered1 = signal.sosfilt(sos, norm_signal)
+sos2 = signal.cheby1(2, 1,5, 'lp', fs=100,analog=False, output='sos')
+filtered2 = signal.sosfilt(sos2, filtered1)
+plot(filtered2,"Filtro IIR Chebyshef")
+
+
+butter = signal.bessel(3, 2, 'hp', fs=100,analog=False, output='sos')
+filtered3 = signal.sosfilt(butter, norm_signal)
+butter2 = signal.bessel(3, 5, 'lp', fs=100,analog=False, output='sos')
+filtered4 = signal.sosfilt(butter2, filtered3)
+plot(filtered4,"Filtro IIR Bessel")
+
+
+plt.subplot(2,1,1)
+plt.plot(norm_signal)
+plt.subplot(2,1,2)
+plt.plot(filtered4)
+
+#b, a = signal.butter(12, 100, 'low', analog=True)
+#w, h = signal.freqs(b, a)
+#
+#
+#
+#output_signal = signal.filtfilt(b, a, norm_signal)
+#plt.plot(output_signal)
+#plot(output_signal,"TEST")
+
+
+#plt.plot(w, 20 * np.log10(abs(h)))
+#plt.xscale('log')
+#plt.title('Butterworth filter frequency response')
+#plt.xlabel('Frequency [radians / second]')
+#plt.ylabel('Amplitude [dB]')
+#plt.margins(0, 0.1)
+#plt.grid(which='both', axis='both')
+#plt.axvline(100, color='green') # cutoff frequency
+#plt.show()
